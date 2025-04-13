@@ -11,7 +11,7 @@ Aine LTAT.03.025 Henry ja Raido projekt
 - iga nupu üks külg on sinist värvi ja teine külg oranži värvi
 - mängijad käivad kordamööda
 - käik
-    - mängija keerab võimalusel ühe vastase nupu üle serva kõrvalruudule (keerata saab vaid tühjale ruudule, keeramise järel on nupp teistpidi ehk värv vahetub, aga nupu pmanik jääb samaks)
+    - mängija keerab võimalusel ühe vastase nupu üle serva kõrvalruudule (keerata saab vaid tühjale ruudule, keeramise järel on nupp teistpidi ehk värv vahetub, aga nupu omanik jääb samaks)
     - mängija käib ühe oma nupu tühjale ruudule, endavalitud värv ülevalpool
 - võitmine
     - võidab see, kes saab esimesena kolm enda samavärvi nuppu järjest horisontaalselt, vertikaalselt või diagonaalselt
