@@ -1,14 +1,12 @@
 #include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <optional>
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode({600, 400}), "SFML 3 Circle");
+    sf::RenderWindow window(sf::VideoMode({600, 600}), "SFML 3 Circle");
 
     // Create a circle shape
-    sf::CircleShape circle(100.f); // radius
-    circle.setFillColor(sf::Color::White);
-    circle.setPosition({200.f, 150.f}); // x, y
+    sf::CircleShape circle(200.f); // radius
+    circle.setFillColor(sf::Color::Black);
+    circle.setPosition({100.f, 100.f}); // x, y
 
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
@@ -17,7 +15,7 @@ int main() {
             }
         }
 
-        window.clear(sf::Color::Black);
+        window.clear(sf::Color::White);
         window.draw(circle);
         window.display();
     }
