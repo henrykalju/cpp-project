@@ -207,4 +207,18 @@ public:
 
         return true;
     };
+
+    bool Place(int row, int col, SpacePlayer p) {
+        AssertRowCol(row, col);
+        assert(p != Empty);
+
+        if (spaces[row][col] != Empty) {
+            return false;
+        }
+
+        spaces[row][col] = p;
+        return true;
+    };
+
+    // TODO: GetTurnableSpaces
 };
