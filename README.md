@@ -25,3 +25,8 @@ Aine LTAT.03.025 Henry ja Raido projekt
 - `cmake ..`
 - `make`
 - `./main`
+
+### dev keskkond
+
+- peale cmake jooksutamist tekkis build kausta compile_commands.json, mida editorid oskavad kasutada, et language server toimiks ilusti.
+- peaks toimima: `ln -s build/compile_commands.json compile_commands.json`.
