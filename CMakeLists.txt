@@ -4,13 +4,15 @@ project(cpp-project)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(SFML 3 COMPONENTS graphics window system REQUIRED)
+add_subdirectory(SFML EXCLUDE_FROM_ALL)
+
+include_directories(SFML/include)
 
 add_executable(
     main
     src/main.cpp
     )
 
-target_compile_options(main PRIVATE -Wall -Wextra -Wpedantic -Werror)
+target_link_libraries(main PRIVATE sfml-graphics sfml-window sfml-system)
 
-target_link_libraries(main sfml-graphics sfml-window sfml-system)
+target_compile_options(main PRIVATE -Wall -Wextra -Wpedantic -Werror)

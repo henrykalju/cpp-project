@@ -18,3 +18,10 @@ Aine LTAT.03.025 Henry ja Raido projekt
     - kui teine mängija saab enda käigu alguses nupu keeramisega kolmese jada ära kõhkuda, pole mäng läbi
     - kui vastane peab oma käigu alguses keerama mängija nupu nii, et mängija sai kolm järjest, on mängija võitnud
 
+
+### Ehitamine
+- `mkdir build`
+- `cd build`
+- `cmake ..`
+- `make`
+- `./main`

@@ -1,26 +1,24 @@
-#include <iostream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+#include <optional>
 
 int main() {
-    std::cout << "hello" << std::endl;
-    sf::RenderWindow window(sf::VideoMode(600, 600), "Test");
+    sf::RenderWindow window(sf::VideoMode({600, 400}), "SFML 3 Circle");
 
-    sf::CircleShape circle(200);
-    circle.setFillColor(sf::Color::Black);
-    circle.setPosition(100, 100);
+    // Create a circle shape
+    sf::CircleShape circle(100.f); // radius
+    circle.setFillColor(sf::Color::White);
+    circle.setPosition({200.f, 150.f}); // x, y
 
     while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
+        while (const std::optional event = window.pollEvent()) {
+            if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
         }
 
-        window.clear(sf::Color::White);
-
+        window.clear(sf::Color::Black);
         window.draw(circle);
-
         window.display();
     }
 
