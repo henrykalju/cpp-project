@@ -12,4 +12,5 @@ add_executable(
     )
 
 target_compile_options(main PRIVATE -Wall -Wextra -Wpedantic -Werror)
+
 target_link_libraries(main sfml-graphics sfml-window sfml-system)
