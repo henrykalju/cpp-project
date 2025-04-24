@@ -34,18 +34,23 @@ enum Direction {
     Right
 };
 
-Player Turn = Player::Player1;
-TurnPhase Phase = TurnPhase::Flip;
+struct Coords {
+    int row;
+    int col;
+};
 
 const int ROW_COUNT = 4;
 const int COL_COUNT = 4;
 
 class Board {
 private:
-    void AssertRowCol(int row, int col) {
-        assert(row >= 0 && row <= 3 && col >= 0 && col <= 3);
+    void AssertCoords(Coords c) {
+        assert(c.row >= 0 && c.row <= 3 && c.col >= 0 && c.col <= 3);
     };
 public:
+    Player Turn = Player::Player1;
+    TurnPhase Phase = TurnPhase::Flip;
+
     using SpacesType = std::array<std::array<SpacePlayer, COL_COUNT>, ROW_COUNT>;
     SpacesType spaces;
 
@@ -55,21 +60,25 @@ public:
         }
     }
 
-    std::vector<Direction> GetEmptySides(int row, int col) {
-        AssertRowCol(row, col);
+    SpacePlayer &GetSpace(Coords c) {
+        return spaces[c.row][c.col];
+    };
+
+    std::vector<Direction> GetEmptySides(Coords c) {
+        AssertCoords(c);
 
         std::vector<Direction> r = {};
 
-        if (row > 0 && spaces[row-1][col] == Empty) {
+        if (c.row > 0 && spaces[c.row-1][c.col] == Empty) {
             r.push_back(Up);
         }
-        if (row < 3 && spaces[row+1][col] == Empty) {
+        if (c.row < 3 && spaces[c.row+1][c.col] == Empty) {
             r.push_back(Down);
         }
-        if (col > 0 && spaces[row][col-1] == Empty) {
+        if (c.col > 0 && spaces[c.row][c.col-1] == Empty) {
             r.push_back(Left);
         }
-        if (col < 3 && spaces[row][col+1] == Empty) {
+        if (c.col < 3 && spaces[c.row][c.col+1] == Empty) {
             r.push_back(Right);
         }
 
@@ -147,11 +156,11 @@ public:
         return Winner::None;
     };
 
-    bool Flip(int row, int col, Direction dir) {
-        AssertRowCol(row, col);
+    bool Flip(Coords c, Direction dir) {
+        AssertCoords(c);
 
         bool good = false;
-        for(auto d : GetEmptySides(row, col)) {
+        for(auto d : GetEmptySides(c)) {
             if (d == dir) {
                 good = true;
                 break;
@@ -162,9 +171,15 @@ public:
             return false;
         }
 
+        SpacePlayer p = GetSpace(c);
+        if ((p == Player1Side1 || p == Player1Side2) && Turn == Player::Player1 ||
+            (p == Player2Side1 || p == Player2Side2) && Turn == Player::Player2) {
+            return false;
+        }
+
         SpacePlayer target;
 
-        switch (spaces[row][col])
+        switch (p)
         {
         case Empty:
             return false;
@@ -188,37 +203,71 @@ public:
         switch (dir)
         {
         case Up:
-            spaces[row-1][col] = target;
+            spaces[c.row-1][c.col] = target;
             break;
         case Down:
-            spaces[row+1][col] = target;
+            spaces[c.row+1][c.col] = target;
             break;
         case Left:
-            spaces[row][col-1] = target;
+            spaces[c.row][c.col-1] = target;
             break;
         case Right:
-            spaces[row][col+1] = target;
+            spaces[c.row][c.col+1] = target;
             break;
         
         default:
             break;
         }
-        spaces[row][col] = Empty;
+        GetSpace(c) = Empty;
 
+        Phase = TurnPhase::Place;
         return true;
     };
 
-    bool Place(int row, int col, SpacePlayer p) {
-        AssertRowCol(row, col);
+    bool Place(Coords c, SpacePlayer p) {
+        AssertCoords(c);
         assert(p != Empty);
 
-        if (spaces[row][col] != Empty) {
+        if (Phase != TurnPhase::Place) {
             return false;
         }
 
-        spaces[row][col] = p;
+        if (GetSpace(c) != Empty) {
+            return false;
+        }
+
+        GetSpace(c) = p;
+
+        Phase = TurnPhase::Flip;
+        Turn = Turn == Player::Player1 ? Player::Player2 : Player::Player1;
         return true;
     };
 
-    // TODO: GetTurnableSpaces
+    std::vector<Coords> GetTurnableSpaces() {
+        std::vector<Coords> r;
+        if (Phase != TurnPhase::Flip) {
+            return r;
+        }
+
+        for (int row = 0; row < ROW_COUNT; row++) {
+            for (int col = 0; col < COL_COUNT; col++) {
+                Coords c = {.row = row, .col = col};
+                SpacePlayer p = GetSpace(c);
+                if (p == Empty) {
+                    continue;
+                }
+
+                if (GetEmptySides(c).empty()) {
+                    continue;
+                }
+
+                if ((p == Player1Side1 || p == Player1Side2) && Turn == Player::Player2 ||
+                    (p == Player2Side1 || p == Player2Side2) && Turn == Player::Player1) {
+                    r.push_back(c);
+                }
+            }
+        }
+        
+        return r;
+    };
 };
