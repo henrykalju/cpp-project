@@ -49,7 +49,7 @@ private:
     };
 public:
     Player Turn = Player::Player1;
-    TurnPhase Phase = TurnPhase::Flip;
+    TurnPhase Phase = TurnPhase::Place;
 
     using SpacesType = std::array<std::array<SpacePlayer, COL_COUNT>, ROW_COUNT>;
     SpacesType spaces;
