@@ -39,6 +39,7 @@ struct Coords {
     int col;
 };
 
+
 const int ROW_COUNT = 4;
 const int COL_COUNT = 4;
 
@@ -172,8 +173,8 @@ public:
         }
 
         SpacePlayer p = GetSpace(c);
-        if ((p == Player1Side1 || p == Player1Side2) && Turn == Player::Player1 ||
-            (p == Player2Side1 || p == Player2Side2) && Turn == Player::Player2) {
+        if (((p == Player1Side1 || p == Player1Side2) && Turn == Player::Player1) ||
+            ((p == Player2Side1 || p == Player2Side2) && Turn == Player::Player2)) {
             return false;
         }
 
@@ -261,8 +262,8 @@ public:
                     continue;
                 }
 
-                if ((p == Player1Side1 || p == Player1Side2) && Turn == Player::Player2 ||
-                    (p == Player2Side1 || p == Player2Side2) && Turn == Player::Player1) {
+                if (((p == Player1Side1 || p == Player1Side2) && Turn == Player::Player2) ||
+                    ((p == Player2Side1 || p == Player2Side2) && Turn == Player::Player1)) {
                     r.push_back(c);
                 }
             }
@@ -270,4 +271,20 @@ public:
         
         return r;
     };
+
+    std::vector<Coords> GetEmptySpaces() {
+        std::vector<Coords> r;
+
+        for (int row = 0; row < ROW_COUNT; row++) {
+            for (int col = 0; col < COL_COUNT; col++) {
+                Coords c = {.row = row, .col = col};
+                SpacePlayer p = GetSpace(c);
+                if (p == Empty) {
+                    r.push_back(c);
+                }
+            }
+        }
+        
+        return r;
+    }
 };
