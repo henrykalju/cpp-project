@@ -251,6 +251,23 @@ void draw() {
 
 	drawBoard(100.f, 50.f, 300.f);
 
+	Winner winner = board.GetWinner();
+	switch (winner)
+	{
+	case Winner::Player1:
+		DrawText("Player 1 won", 200, 200, 50, WHITE);
+		break;
+	case Winner::Player2:
+		DrawText("Player 2 won", 200, 200, 50, WHITE);
+		break;
+	case Winner::Tie:
+		DrawText("Viik", 200, 200, 50, WHITE);
+		break;
+	
+	default:
+		break;
+	}
+
 	EndDrawing();
 }
 int main() {
