@@ -5,8 +5,8 @@
 Board board;
 
 Color emptyColor{50, 50, 50, 255};
-Color side1Color{255, 50, 50, 255};
-Color side2Color{50, 50, 255, 255};
+Color side1Color{200, 65, 50, 255};
+Color side2Color{50, 65, 200, 255};
 
 Player GetPlayerFromSpacePlayer(SpacePlayer p) {
 	assert(p != SpacePlayer::Empty);
@@ -19,29 +19,29 @@ Player GetPlayerFromSpacePlayer(SpacePlayer p) {
 };
 
 bool rectangleContainsVector(Rectangle rec, Vector2 v) {
-	return rec.x <= v.x && rec.x + rec.width >= v.x && 
-		   rec.y <= v.y && rec.y + rec.height >= v.y;
+	return rec.x <= v.x && rec.x + rec.width >= v.x && rec.y <= v.y && rec.y + rec.height >= v.y;
 }
 
-bool triangleContainsVector(Vector2 a, Vector2 b, Vector2 c, Vector2 pt)  {
-    Vector2 v0 = { c.x - a.x, c.y - a.y };
-    Vector2 v1 = { b.x - a.x, b.y - a.y };
-    Vector2 v2 = { pt.x - a.x, pt.y - a.y };
+bool triangleContainsVector(Vector2 a, Vector2 b, Vector2 c, Vector2 pt) {
+	Vector2 v0 = {c.x - a.x, c.y - a.y};
+	Vector2 v1 = {b.x - a.x, b.y - a.y};
+	Vector2 v2 = {pt.x - a.x, pt.y - a.y};
 
-    float dot00 = v0.x * v0.x + v0.y * v0.y;
-    float dot01 = v0.x * v1.x + v0.y * v1.y;
-    float dot02 = v0.x * v2.x + v0.y * v2.y;
-    float dot11 = v1.x * v1.x + v1.y * v1.y;
-    float dot12 = v1.x * v2.x + v1.y * v2.y;
+	float dot00 = v0.x * v0.x + v0.y * v0.y;
+	float dot01 = v0.x * v1.x + v0.y * v1.y;
+	float dot02 = v0.x * v2.x + v0.y * v2.y;
+	float dot11 = v1.x * v1.x + v1.y * v1.y;
+	float dot12 = v1.x * v2.x + v1.y * v2.y;
 
-    float denom = dot00 * dot11 - dot01 * dot01;
-    if (denom == 0.0f) return false;
+	float denom = dot00 * dot11 - dot01 * dot01;
+	if (denom == 0.0f)
+		return false;
 
-    float invDenom = 1.0f / denom;
-    float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-    float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+	float invDenom = 1.0f / denom;
+	float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+	float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
-    return (u >= 0) && (v >= 0) && (u + v <= 1);
+	return (u >= 0) && (v >= 0) && (u + v <= 1);
 }
 
 Color getPieceColor(SpacePlayer p) {
@@ -66,23 +66,17 @@ Color getPieceColor(SpacePlayer p) {
 }
 
 void drawPlayerSymbol(Player p, Rectangle rec) {
-float scale = 0.3;
-	Rectangle rec2{
-		rec.x + (1-scale)/2*rec.width,
-		rec.y + (1-scale)/2*rec.height,
-		rec.width*scale,
-		rec.height*scale
-	};
-	switch (p)
-	{
-	case Player::Player1: 
-		DrawRectangleRec(rec2, BLACK);
+	float scale = 0.3;
+	Rectangle rec2{rec.x + (1 - scale) / 2 * rec.width, rec.y + (1 - scale) / 2 * rec.height,
+	               rec.width * scale, rec.height * scale};
+	switch (p) {
+	case Player::Player1:
+		DrawRectangleRec(rec2, WHITE);
 		break;
 	case Player::Player2:
 		DrawCircleV({rec.x + rec.width / 2, rec.y + rec.height / 2}, 10, BLACK);
 		break;
 	}
-	
 }
 
 void drawPiece(SpacePlayer spacePlayer, Rectangle rec) {
@@ -98,7 +92,7 @@ void drawBoard(float x, float y, float size) {
 	float pieceSizeWithPadding = size / ROW_COUNT;
 	float pieceSize = pieceSizeWithPadding * (100.f - paddingPercent) / 100.f;
 	Vector2 mousePos = GetMousePosition();
-	
+
 	Winner winner = board.GetWinner();
 
 	for (int row = 0; row < ROW_COUNT; row++) {
@@ -146,8 +140,7 @@ void drawBoard(float x, float y, float size) {
 					dr = {rec.x + rec.width, rec.y + rec.height};
 					for (auto s : sides) {
 						Vector2 v1, v2, v3;
-						switch (s)
-						{
+						switch (s) {
 						case Up:
 							v1 = ur;
 							v2 = ul;
@@ -184,7 +177,7 @@ void drawBoard(float x, float y, float size) {
 				}
 				DrawRectangleRec({rec.x, rec.y, rec.width / 2, rec.height}, side1Color);
 				DrawRectangleRec({rec.x + rec.width / 2, rec.y, rec.width / 2, rec.height},
-									side2Color);
+				                 side2Color);
 				drawPlayerSymbol(board.Turn, rec);
 				break;
 			}
@@ -201,8 +194,7 @@ void drawBoard(float x, float y, float size) {
 				dr = {rec.x + rec.width, rec.y + rec.height};
 				for (auto s : sides) {
 					Vector2 v1, v2, v3;
-					switch (s)
-					{
+					switch (s) {
 					case Up:
 						v1 = ur;
 						v2 = ul;
@@ -239,11 +231,6 @@ void drawBoard(float x, float y, float size) {
 int screenWidth = 600;
 int screenHeight = 600;
 
-void update() {
-
-	// if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) ballColor = MAROON;
-}
-
 void draw() {
 	BeginDrawing();
 
@@ -252,18 +239,17 @@ void draw() {
 	drawBoard(100.f, 50.f, 300.f);
 
 	Winner winner = board.GetWinner();
-	switch (winner)
-	{
+	switch (winner) {
 	case Winner::Player1:
-		DrawText("Player 1 won", 200, 200, 50, WHITE);
+		DrawText("Player 1 won", 200, 500, 25, WHITE);
 		break;
 	case Winner::Player2:
-		DrawText("Player 2 won", 200, 200, 50, WHITE);
+		DrawText("Player 2 won", 200, 500, 25, WHITE);
 		break;
 	case Winner::Tie:
-		DrawText("Viik", 200, 200, 50, WHITE);
+		DrawText("Tie", 200, 500, 25, WHITE);
 		break;
-	
+
 	default:
 		break;
 	}
@@ -275,7 +261,6 @@ int main() {
 
 	SetTargetFPS(60);
 	while (!WindowShouldClose()) {
-		update();
 		draw();
 	}
 
