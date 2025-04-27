@@ -2,7 +2,7 @@
 #include <cassert>
 #include <vector>
 
-enum SpacePlayer {
+enum class SpacePlayer {
 	Empty,
 	Player1Side1,
 	Player1Side2,
@@ -58,7 +58,7 @@ class Board {
 
 	Board() {
 		for (auto &row : spaces) {
-			row.fill(Empty);
+			row.fill(SpacePlayer::Empty);
 		}
 	}
 
@@ -69,16 +69,16 @@ class Board {
 
 		std::vector<Direction> r = {};
 
-		if (c.row > 0 && spaces[c.row - 1][c.col] == Empty) {
+		if (c.row > 0 && spaces[c.row - 1][c.col] == SpacePlayer::Empty) {
 			r.push_back(Up);
 		}
-		if (c.row < 3 && spaces[c.row + 1][c.col] == Empty) {
+		if (c.row < 3 && spaces[c.row + 1][c.col] == SpacePlayer::Empty) {
 			r.push_back(Down);
 		}
-		if (c.col > 0 && spaces[c.row][c.col - 1] == Empty) {
+		if (c.col > 0 && spaces[c.row][c.col - 1] == SpacePlayer::Empty) {
 			r.push_back(Left);
 		}
-		if (c.col < 3 && spaces[c.row][c.col + 1] == Empty) {
+		if (c.col < 3 && spaces[c.row][c.col + 1] == SpacePlayer::Empty) {
 			r.push_back(Right);
 		}
 
@@ -88,13 +88,13 @@ class Board {
 	Winner GetWinner() {
 		for (int row = 0; row < ROW_COUNT - 2; row++) {
 			for (int col = 0; col < COL_COUNT - 2; col++) {
-				if (spaces[row][col] == Empty) {
+				if (spaces[row][col] == SpacePlayer::Empty) {
 					continue;
 				}
 				if (spaces[row][col] == spaces[row + 1][col + 1] &&
 				    spaces[row][col] == spaces[row + 2][col + 2]) {
-					if (spaces[row][col] == Player1Side1 ||
-					    spaces[row][col] == Player1Side2) {
+					if (spaces[row][col] == SpacePlayer::Player1Side1 ||
+					    spaces[row][col] == SpacePlayer::Player1Side2) {
 						return Winner::Player1;
 					}
 					return Winner::Player2;
@@ -104,13 +104,13 @@ class Board {
 
 		for (int row = 2; row < ROW_COUNT; row++) {
 			for (int col = 0; col < COL_COUNT - 2; col++) {
-				if (spaces[row][col] == Empty) {
+				if (spaces[row][col] == SpacePlayer::Empty) {
 					continue;
 				}
 				if (spaces[row][col] == spaces[row - 1][col + 1] &&
 				    spaces[row][col] == spaces[row - 2][col + 2]) {
-					if (spaces[row][col] == Player1Side1 ||
-					    spaces[row][col] == Player1Side2) {
+					if (spaces[row][col] == SpacePlayer::Player1Side1 ||
+					    spaces[row][col] == SpacePlayer::Player1Side2) {
 						return Winner::Player1;
 					}
 					return Winner::Player2;
@@ -120,13 +120,13 @@ class Board {
 
 		for (int row = 0; row < ROW_COUNT; row++) {
 			for (int col = 0; col < COL_COUNT - 2; col++) {
-				if (spaces[row][col] == Empty) {
+				if (spaces[row][col] == SpacePlayer::Empty) {
 					continue;
 				}
 				if (spaces[row][col] == spaces[row][col + 1] &&
 				    spaces[row][col] == spaces[row][col + 2]) {
-					if (spaces[row][col] == Player1Side1 ||
-					    spaces[row][col] == Player1Side2) {
+					if (spaces[row][col] == SpacePlayer::Player1Side1 ||
+					    spaces[row][col] == SpacePlayer::Player1Side2) {
 						return Winner::Player1;
 					}
 					return Winner::Player2;
@@ -136,13 +136,13 @@ class Board {
 
 		for (int row = 0; row < ROW_COUNT - 2; row++) {
 			for (int col = 0; col < COL_COUNT; col++) {
-				if (spaces[row][col] == Empty) {
+				if (spaces[row][col] == SpacePlayer::Empty) {
 					continue;
 				}
 				if (spaces[row][col] == spaces[row + 1][col] &&
 				    spaces[row][col] == spaces[row + 2][col]) {
-					if (spaces[row][col] == Player1Side1 ||
-					    spaces[row][col] == Player1Side2) {
+					if (spaces[row][col] == SpacePlayer::Player1Side1 ||
+					    spaces[row][col] == SpacePlayer::Player1Side2) {
 						return Winner::Player1;
 					}
 					return Winner::Player2;
@@ -153,7 +153,7 @@ class Board {
 		int emptyCount = 0;
 		for (int row = 0; row < ROW_COUNT; row++) {
 			for (int col = 0; col < COL_COUNT; col++) {
-				if (spaces[row][col] == Empty) {
+				if (spaces[row][col] == SpacePlayer::Empty) {
 					emptyCount++;
 				}
 			}
@@ -180,9 +180,11 @@ class Board {
 		}
 
 		SpacePlayer p = GetSpace(c);
-		if (((p == Player1Side1 || p == Player1Side2) &&
+		if (((p == SpacePlayer::Player1Side1 ||
+		      p == SpacePlayer::Player1Side2) &&
 		     Turn == Player::Player1) ||
-		    ((p == Player2Side1 || p == Player2Side2) &&
+		    ((p == SpacePlayer::Player2Side1 ||
+		      p == SpacePlayer::Player2Side2) &&
 		     Turn == Player::Player2)) {
 			return false;
 		}
@@ -190,20 +192,20 @@ class Board {
 		SpacePlayer target;
 
 		switch (p) {
-		case Empty:
+		case SpacePlayer::Empty:
 			return false;
 			break;
-		case Player1Side1:
-			target = Player1Side2;
+		case SpacePlayer::Player1Side1:
+			target = SpacePlayer::Player1Side2;
 			break;
-		case Player1Side2:
-			target = Player1Side1;
+		case SpacePlayer::Player1Side2:
+			target = SpacePlayer::Player1Side1;
 			break;
-		case Player2Side1:
-			target = Player2Side2;
+		case SpacePlayer::Player2Side1:
+			target = SpacePlayer::Player2Side2;
 			break;
-		case Player2Side2:
-			target = Player2Side1;
+		case SpacePlayer::Player2Side2:
+			target = SpacePlayer::Player2Side1;
 			break;
 		default:
 			break;
@@ -226,7 +228,7 @@ class Board {
 		default:
 			break;
 		}
-		GetSpace(c) = Empty;
+		GetSpace(c) = SpacePlayer::Empty;
 
 		Phase = TurnPhase::Place;
 		return true;
@@ -234,13 +236,13 @@ class Board {
 
 	bool Place(Coords c, SpacePlayer p) {
 		AssertCoords(c);
-		assert(p != Empty);
+		assert(p != SpacePlayer::Empty);
 
 		if (Phase != TurnPhase::Place) {
 			return false;
 		}
 
-		if (GetSpace(c) != Empty) {
+		if (GetSpace(c) != SpacePlayer::Empty) {
 			return false;
 		}
 
@@ -261,7 +263,7 @@ class Board {
 			for (int col = 0; col < COL_COUNT; col++) {
 				Coords c = {.row = row, .col = col};
 				SpacePlayer p = GetSpace(c);
-				if (p == Empty) {
+				if (p == SpacePlayer::Empty) {
 					continue;
 				}
 
@@ -269,9 +271,11 @@ class Board {
 					continue;
 				}
 
-				if (((p == Player1Side1 || p == Player1Side2) &&
+				if (((p == SpacePlayer::Player1Side1 ||
+				      p == SpacePlayer::Player1Side2) &&
 				     Turn == Player::Player2) ||
-				    ((p == Player2Side1 || p == Player2Side2) &&
+				    ((p == SpacePlayer::Player2Side1 ||
+				      p == SpacePlayer::Player2Side2) &&
 				     Turn == Player::Player1)) {
 					r.push_back(c);
 				}
@@ -288,7 +292,7 @@ class Board {
 			for (int col = 0; col < COL_COUNT; col++) {
 				Coords c = {.row = row, .col = col};
 				SpacePlayer p = GetSpace(c);
-				if (p == Empty) {
+				if (p == SpacePlayer::Empty) {
 					r.push_back(c);
 				}
 			}
