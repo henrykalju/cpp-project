@@ -1,4 +1,3 @@
-#include <SFML/Graphics.hpp>
 #include <iostream>
 #include "gamestate.cpp"
 
@@ -16,6 +15,9 @@ void drawBoard(Board b) {
 
 int main() {
 	Board b;
+
+	std::cout << "0 tähistab tühja ruutu. 1 ja 2 tähistavad mängija 1 nuppude külgi 1 ja 2. 3 ja 4 tähistavad mängija 2 külgi 1 ja 2." << std::endl;
+	std::cout << "Mängija 1 alustab" << std::endl;
 
 	while (b.GetWinner() == Winner::None) {
 		drawBoard(b);
@@ -40,6 +42,7 @@ int main() {
 		} while (!b.Place({.row = row, .col = col}, t) && std::cout << "Try again" << std::endl);
 		
 		drawBoard(b);
+		std::cout << "Nüüd on mängija " << (b.Turn == Player::Player1 ? "1" : "2") << " kord" << std::endl;
 		c = b.GetTurnableSpaces();
 		std::cout << "Turnable spaces - ";
 		for (size_t i = 0; i < c.size(); i++) {
@@ -75,26 +78,22 @@ int main() {
 		} while (!b.Flip({row, col}, d) && std::cout << "Try again" << std::endl);
 	}
 
-	return 0;
-
-	sf::RenderWindow window(sf::VideoMode({600, 600}), "SFML 3 Circle");
-
-	// Create a circle shape
-	sf::CircleShape circle(200.f); // radius
-	circle.setFillColor(sf::Color::Black);
-	circle.setPosition({100.f, 100.f}); // x, y
-
-	while (window.isOpen()) {
-		while (const std::optional event = window.pollEvent()) {
-			if (event->is<sf::Event::Closed>()) {
-				window.close();
-			}
-		}
-
-		window.clear(sf::Color::White);
-		window.draw(circle);
-		window.display();
+	std::string winner;
+	switch (b.GetWinner())
+	{
+	case Winner::Tie:
+		winner = "viik";
+		break;
+	case Winner::Player1:
+		winner = "mängija 1";
+		break;
+	case Winner::Player2:
+		winner = "mängija 2";
+		break;
+	default:
+		break;
 	}
+	std::cout << "Võitja on: " << winner << std::endl;
 
 	return 0;
 }

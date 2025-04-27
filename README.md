@@ -1,3 +1,5 @@
+Tegu on temporary branchiga ehk mõeldud vaid mängu loogika testimiseks. Error-handling suht puudub, aga kui teha lubatud käike, siis mäng töötab ilusti
+
 Aine LTAT.03.025 Henry ja Raido projekt
 
 ## Projekt
