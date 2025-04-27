@@ -1,5 +1,6 @@
 #include "gamestate.cpp"
 #include <SFML/Graphics.hpp>
+#include <SFML/OpenGL.hpp>
 #include <iostream>
 
 class GUI {
@@ -18,13 +19,13 @@ class GUI {
 		sf::RectangleShape rect({50.f, 50.f});
 		rect.setPosition({400.f, 400.f});
 		rect.setFillColor(emptyColor);
+
 		while (window.isOpen()) {
 			while (const std::optional event = window.pollEvent()) {
 				if (event->is<sf::Event::Closed>()) {
 					window.close();
-				}
-				if (const auto *mouseButtonPressed =
-				        event->getIf<sf::Event::MouseButtonPressed>()) {
+				} else if (const auto *mouseButtonPressed =
+				               event->getIf<sf::Event::MouseButtonPressed>()) {
 					if (mouseButtonPressed->button == sf::Mouse::Button::Left) {
 						const sf::Vector2i pos = sf::Mouse::getPosition(window);
 						std::cout
@@ -35,11 +36,19 @@ class GUI {
 						    << std::endl;
 						std::cout << "mouse x2: " << pos.x << std::endl;
 						std::cout << "mouse y2: " << pos.y << std::endl;
+						std::cout << window.getSize().x << " "
+						          << window.getSize().y << std::endl;
 						if (rect.getGlobalBounds().contains(
 						        {(float)pos.x, (float)pos.y})) {
 							rect.setFillColor(
 							    sf::Color(rand() % 256, rand() % 256, 0));
 						}
+					} else if (const auto *resized =
+					               event->getIf<sf::Event::Resized>()) {
+						sf::FloatRect visibleArea(
+						    {0, 0},
+						    {(float)resized->size.x, (float)resized->size.y});
+						window.setView(sf::View(visibleArea));
 					}
 				}
 			}
