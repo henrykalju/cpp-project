@@ -285,6 +285,27 @@ class Board {
 		return r;
 	};
 
+	bool IsSpaceFlippable(Coords coords) {
+		if (Phase != TurnPhase::Flip) {
+			return false;
+		}
+		SpacePlayer p = GetSpace(coords);
+		if (p == SpacePlayer::Empty) {
+			return false;
+		}
+
+		if (GetEmptySides(coords).empty()) {
+			return false;
+		}
+
+		return (((p == SpacePlayer::Player1Side1 ||
+		          p == SpacePlayer::Player1Side2) &&
+		         Turn == Player::Player2) ||
+		        ((p == SpacePlayer::Player2Side1 ||
+		          p == SpacePlayer::Player2Side2) &&
+		         Turn == Player::Player1));
+	}
+
 	std::vector<Coords> GetEmptySpaces() {
 		std::vector<Coords> r;
 

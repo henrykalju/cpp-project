@@ -2,150 +2,130 @@
 #include "raylib.h"
 #include <iostream>
 
-// class GUI {
-//   private:
-// 	sf::RenderWindow window;
-// 	Board board;
-// 	sf::Color emptyColor{50, 50, 50};
-// 	sf::Color side1Color{255, 50, 50};
-// 	sf::Color side2Color{50, 50, 255};
-//
-//   public:
-// 	GUI()
-// 	    : window(sf::RenderWindow(sf::VideoMode({600, 600}, sf::Style::None),
-// 	                              "Game")),
-// 	      board(Board()) {
-//
-// 		const auto s = window.getSize();
-// 		std::cout << s.x << " " << s.y;
-// 		// sf::FloatRect visibleArea({0, 0}, {(float)s.x, (float)s.y});
-// 		sf::FloatRect visibleArea({0, 0}, {900, 1000});
-// 		window.setView(sf::View(visibleArea));
-// 	}
-// 	void run() {
-// 		sf::RectangleShape rect({50.f, 50.f});
-// 		rect.setPosition({400.f, 400.f});
-// 		rect.setFillColor(emptyColor);
-//
-// 		while (window.isOpen()) {
-// 			while (const std::optional event = window.pollEvent()) {
-// 				if (event->is<sf::Event::Closed>()) {
-// 					window.close();
-// 				} else if (const auto *mouseButtonPressed =
-// 				               event->getIf<sf::Event::MouseButtonPressed>()) {
-// 					if (mouseButtonPressed->button == sf::Mouse::Button::Left) {
-// 						const sf::Vector2i pos = sf::Mouse::getPosition(window);
-// 						std::cout
-// 						    << "mouse x: " << mouseButtonPressed->position.x
-// 						    << std::endl;
-// 						std::cout
-// 						    << "mouse y: " << mouseButtonPressed->position.y
-// 						    << std::endl;
-// 						std::cout << "mouse x2: " << pos.x << std::endl;
-// 						std::cout << "mouse y2: " << pos.y << std::endl;
-// 						std::cout << window.getSize().x << " "
-// 						          << window.getSize().y << std::endl;
-// 						if (rect.getGlobalBounds().contains(
-// 						        {(float)pos.x, (float)pos.y})) {
-// 							rect.setFillColor(
-// 							    sf::Color(rand() % 256, rand() % 256, 0));
-// 						}
-// 					} else if (const auto *resized =
-// 					               event->getIf<sf::Event::Resized>()) {
-// 						sf::FloatRect visibleArea(
-// 						    {0, 0},
-// 						    {(float)resized->size.x, (float)resized->size.y});
-// 						window.setView(sf::View(visibleArea));
-// 					}
-// 				}
-// 			}
-//
-// 			window.clear(sf::Color::Black);
-// 			drawBoard();
-// 			window.draw(rect);
-// 			window.display();
-// 		}
-// 	}
-// 	void drawBoard() {
-// 		for (int row = 0; row < ROW_COUNT; row++) {
-// 			for (int col = 0; col < COL_COUNT; col++) {
-// 				sf::RectangleShape rect({50.f, 50.f});
-// 				rect.setPosition({60.f * col + 100.f, 60.f * row + 100.f});
-// 				switch (board.spaces[row][col]) {
-// 				case SpacePlayer::Empty: {
-// 					rect.setFillColor(emptyColor);
-// 					break;
-// 				}
-// 				case SpacePlayer::Player1Side1: {
-// 					rect.setFillColor(side1Color);
-// 					break;
-// 				}
-// 				case SpacePlayer::Player1Side2: {
-// 					rect.setFillColor(side2Color);
-// 					break;
-// 				}
-// 				case SpacePlayer::Player2Side1: {
-// 					rect.setFillColor(side1Color);
-// 					break;
-// 				}
-// 				case SpacePlayer::Player2Side2: {
-// 					rect.setFillColor(side2Color);
-// 					break;
-// 				}
-// 				};
-// 				window.draw(rect);
-// 			}
-// 		}
-// 	}
-// };
+Board board;
 
-int screenWidth = 800;
-int screenHeight = 450;
+Color emptyColor{50, 50, 50, 255};
+Color side1Color{255, 50, 50, 255};
+Color side2Color{50, 50, 255, 255};
 
-//----------------------------------------------------------------------------------
-// Module Functions Declaration
-//----------------------------------------------------------------------------------
-void UpdateDrawFrame(void) {
-	// Update
-	//----------------------------------------------------------------------------------
-	// TODO: Update your variables here
-	//----------------------------------------------------------------------------------
+bool rectangleContainsVector(Rectangle rec, Vector2 v) {
+	return rec.x <= v.x && rec.x + rec.width >= v.x && rec.y <= v.y && rec.y + rec.height >= v.y;
+}
 
-	// Draw
-	//----------------------------------------------------------------------------------
+Color getPieceColor(SpacePlayer p) {
+	switch (p) {
+	case SpacePlayer::Empty: {
+		return emptyColor;
+	}
+	case SpacePlayer::Player1Side1: {
+		return side1Color;
+	}
+	case SpacePlayer::Player1Side2: {
+		return side2Color;
+	}
+	case SpacePlayer::Player2Side1: {
+		return side1Color;
+	}
+	case SpacePlayer::Player2Side2: {
+		return side2Color;
+	}
+	};
+	return Color(255, 255, 255, 255);
+}
+
+void drawPiece(SpacePlayer spacePlayer, Rectangle rec) {
+	DrawRectangleRec(rec, getPieceColor(spacePlayer));
+}
+
+void drawBoard(float x, float y, float size) {
+	float paddingPercent = 10.f;
+	float pieceSizeWithPadding = size / ROW_COUNT;
+	float pieceSize = pieceSizeWithPadding * (100.f - paddingPercent) / 100.f;
+	Vector2 mousePos = GetMousePosition();
+
+	for (int row = 0; row < ROW_COUNT; row++) {
+		for (int col = 0; col < COL_COUNT; col++) {
+			Rectangle rec{pieceSizeWithPadding * col + x, pieceSizeWithPadding * row + y, pieceSize,
+			              pieceSize};
+
+			drawPiece(board.spaces[row][col], rec);
+			if (board.IsSpaceFlippable({row, col})) {
+				DrawRectangleRec(rec, Color(255, 255, 255, 50));
+			}
+
+			if (!rectangleContainsVector(rec, mousePos)) {
+				continue;
+			}
+			if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+				switch (board.Phase) {
+				case TurnPhase::Place: {
+					SpacePlayer p =
+					    rec.x + rec.width / 2 < mousePos.x
+					        ? (board.Turn == Player::Player1 ? SpacePlayer::Player1Side2
+					                                         : SpacePlayer::Player2Side2)
+					        : (board.Turn == Player::Player1 ? SpacePlayer::Player1Side1
+					                                         : SpacePlayer::Player2Side1);
+					if (board.Place({row, col}, p)) {
+						drawPiece(board.spaces[row][col], rec);
+					}
+					break;
+				}
+				case TurnPhase::Flip: {
+					if (!board.IsSpaceFlippable({row, col})) {
+						continue;
+					}
+				}
+				}
+			}
+			switch (board.Phase) {
+			case TurnPhase::Place: {
+				if (board.spaces[row][col] == SpacePlayer::Empty) {
+					DrawRectangleRec({rec.x, rec.y, rec.width / 2, rec.height}, side1Color);
+					DrawRectangleRec({rec.x + rec.width / 2, rec.y, rec.width / 2, rec.height},
+					                 side2Color);
+				}
+				break;
+			}
+			case TurnPhase::Flip: {
+				if (!board.IsSpaceFlippable({row, col})) {
+					continue;
+				}
+				DrawTriangle({rec.x, rec.y}, {rec.x, rec.y + rec.height},
+				             {rec.x + rec.width / 2, rec.y + rec.height / 2},
+				             getPieceColor(board.spaces[row][col]));
+				break;
+			}
+			}
+		}
+	}
+}
+
+int screenWidth = 600;
+int screenHeight = 600;
+
+void update() {
+
+	// if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) ballColor = MAROON;
+}
+
+void draw() {
 	BeginDrawing();
 
-	ClearBackground(RAYWHITE);
+	ClearBackground(BLACK);
 
-	DrawText("Congrats! You created your first window!", 190, 200, 20,
-	         LIGHTGRAY);
+	drawBoard(100.f, 50.f, 300.f);
 
 	EndDrawing();
-	//----------------------------------------------------------------------------------
 }
 int main() {
+	InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
-	// Initialization
-	//--------------------------------------------------------------------------------------
-	InitWindow(screenWidth, screenHeight,
-	           "raylib [core] example - basic window");
-
-	SetTargetFPS(60); // Set our game to run at 60 frames-per-second
-	//--------------------------------------------------------------------------------------
-
-	// Main game loop
-	while (!WindowShouldClose()) // Detect window close button or ESC key
-	{
-		UpdateDrawFrame();
+	SetTargetFPS(60);
+	while (!WindowShouldClose()) {
+		update();
+		draw();
 	}
 
-	// De-Initialization
-	//--------------------------------------------------------------------------------------
-	CloseWindow(); // Close window and OpenGL context
-	//--------------------------------------------------------------------------------------
-
-	return 0;
-	// GUI gui{};
-	// gui.run();
+	CloseWindow();
 	return 0;
 }
