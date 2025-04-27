@@ -1,290 +1,299 @@
 #include <array>
-#include <vector>
 #include <cassert>
+#include <vector>
 
 enum SpacePlayer {
-    Empty,
-    Player1Side1,
-    Player1Side2,
-    Player2Side1,
-    Player2Side2
+	Empty,
+	Player1Side1,
+	Player1Side2,
+	Player2Side1,
+	Player2Side2
 };
 
 enum class Player {
-    Player1,
-    Player2
+	Player1,
+	Player2,
 };
 
 enum TurnPhase {
-    Flip,
-    Place
+	Flip,
+	Place,
 };
 
 enum class Winner {
-    None,
-    Player1,
-    Player2,
-    Tie
+	None,
+	Player1,
+	Player2,
+	Tie,
 };
 
 enum Direction {
-    Up,
-    Down,
-    Left,
-    Right
+	Up,
+	Down,
+	Left,
+	Right,
 };
 
 struct Coords {
-    int row;
-    int col;
+	int row;
+	int col;
 };
-
 
 const int ROW_COUNT = 4;
 const int COL_COUNT = 4;
 
 class Board {
-private:
-    void AssertCoords(Coords c) {
-        assert(c.row >= 0 && c.row <= 3 && c.col >= 0 && c.col <= 3);
-    };
-public:
-    Player Turn = Player::Player1;
-    TurnPhase Phase = TurnPhase::Place;
+  private:
+	void AssertCoords(Coords c) {
+		assert(c.row >= 0 && c.row <= 3 && c.col >= 0 && c.col <= 3);
+	};
 
-    using SpacesType = std::array<std::array<SpacePlayer, COL_COUNT>, ROW_COUNT>;
-    SpacesType spaces;
+  public:
+	Player Turn = Player::Player1;
+	TurnPhase Phase = TurnPhase::Place;
 
-    Board() {
-        for (auto& row : spaces) {
-            row.fill(Empty);
-        }
-    }
+	using SpacesType =
+	    std::array<std::array<SpacePlayer, COL_COUNT>, ROW_COUNT>;
+	SpacesType spaces;
 
-    SpacePlayer &GetSpace(Coords c) {
-        return spaces[c.row][c.col];
-    };
+	Board() {
+		for (auto &row : spaces) {
+			row.fill(Empty);
+		}
+	}
 
-    std::vector<Direction> GetEmptySides(Coords c) {
-        AssertCoords(c);
+	SpacePlayer &GetSpace(Coords c) { return spaces[c.row][c.col]; };
 
-        std::vector<Direction> r = {};
+	std::vector<Direction> GetEmptySides(Coords c) {
+		AssertCoords(c);
 
-        if (c.row > 0 && spaces[c.row-1][c.col] == Empty) {
-            r.push_back(Up);
-        }
-        if (c.row < 3 && spaces[c.row+1][c.col] == Empty) {
-            r.push_back(Down);
-        }
-        if (c.col > 0 && spaces[c.row][c.col-1] == Empty) {
-            r.push_back(Left);
-        }
-        if (c.col < 3 && spaces[c.row][c.col+1] == Empty) {
-            r.push_back(Right);
-        }
+		std::vector<Direction> r = {};
 
-        return r;
-    };
+		if (c.row > 0 && spaces[c.row - 1][c.col] == Empty) {
+			r.push_back(Up);
+		}
+		if (c.row < 3 && spaces[c.row + 1][c.col] == Empty) {
+			r.push_back(Down);
+		}
+		if (c.col > 0 && spaces[c.row][c.col - 1] == Empty) {
+			r.push_back(Left);
+		}
+		if (c.col < 3 && spaces[c.row][c.col + 1] == Empty) {
+			r.push_back(Right);
+		}
 
-    Winner GetWinner() {
-        for (int row = 0; row < ROW_COUNT - 2; row++) {
-            for (int col = 0; col < COL_COUNT - 2; col++) {
-                if (spaces[row][col] == Empty) {
-                    continue;
-                }
-                if (spaces[row][col] == spaces[row+1][col+1] && spaces[row][col] == spaces[row+2][col+2]) {
-                    if (spaces[row][col] == Player1Side1 || spaces[row][col] == Player1Side2) {
-                        return Winner::Player1;
-                    }
-                    return Winner::Player2;
-                }
-            }
-        }
+		return r;
+	};
 
-        for (int row = 2; row < ROW_COUNT; row++) {
-            for (int col = 0; col < COL_COUNT - 2; col++) {
-                if (spaces[row][col] == Empty) {
-                    continue;
-                }
-                if (spaces[row][col] == spaces[row-1][col+1] && spaces[row][col] == spaces[row-2][col+2]) {
-                    if (spaces[row][col] == Player1Side1 || spaces[row][col] == Player1Side2) {
-                        return Winner::Player1;
-                    }
-                    return Winner::Player2;
-                }
-            }
-        }
+	Winner GetWinner() {
+		for (int row = 0; row < ROW_COUNT - 2; row++) {
+			for (int col = 0; col < COL_COUNT - 2; col++) {
+				if (spaces[row][col] == Empty) {
+					continue;
+				}
+				if (spaces[row][col] == spaces[row + 1][col + 1] &&
+				    spaces[row][col] == spaces[row + 2][col + 2]) {
+					if (spaces[row][col] == Player1Side1 ||
+					    spaces[row][col] == Player1Side2) {
+						return Winner::Player1;
+					}
+					return Winner::Player2;
+				}
+			}
+		}
 
-        for (int row = 0; row < ROW_COUNT; row++) {
-            for (int col = 0; col < COL_COUNT - 2; col++) {
-                if (spaces[row][col] == Empty) {
-                    continue;
-                }
-                if (spaces[row][col] == spaces[row][col+1] && spaces[row][col] == spaces[row][col+2]) {
-                    if (spaces[row][col] == Player1Side1 || spaces[row][col] == Player1Side2) {
-                        return Winner::Player1;
-                    }
-                    return Winner::Player2;
-                }
-            }
-        }
+		for (int row = 2; row < ROW_COUNT; row++) {
+			for (int col = 0; col < COL_COUNT - 2; col++) {
+				if (spaces[row][col] == Empty) {
+					continue;
+				}
+				if (spaces[row][col] == spaces[row - 1][col + 1] &&
+				    spaces[row][col] == spaces[row - 2][col + 2]) {
+					if (spaces[row][col] == Player1Side1 ||
+					    spaces[row][col] == Player1Side2) {
+						return Winner::Player1;
+					}
+					return Winner::Player2;
+				}
+			}
+		}
 
-        for (int row = 0; row < ROW_COUNT - 2; row++) {
-            for (int col = 0; col < COL_COUNT; col++) {
-                if (spaces[row][col] == Empty) {
-                    continue;
-                }
-                if (spaces[row][col] == spaces[row+1][col] && spaces[row][col] == spaces[row+2][col]) {
-                    if (spaces[row][col] == Player1Side1 || spaces[row][col] == Player1Side2) {
-                        return Winner::Player1;
-                    }
-                    return Winner::Player2;
-                }
-            }
-        }
+		for (int row = 0; row < ROW_COUNT; row++) {
+			for (int col = 0; col < COL_COUNT - 2; col++) {
+				if (spaces[row][col] == Empty) {
+					continue;
+				}
+				if (spaces[row][col] == spaces[row][col + 1] &&
+				    spaces[row][col] == spaces[row][col + 2]) {
+					if (spaces[row][col] == Player1Side1 ||
+					    spaces[row][col] == Player1Side2) {
+						return Winner::Player1;
+					}
+					return Winner::Player2;
+				}
+			}
+		}
 
-        int emptyCount = 0;
-        for (int row = 0; row < ROW_COUNT; row++) {
-            for (int col = 0; col < COL_COUNT; col++) {
-                if (spaces[row][col] == Empty) {
-                    emptyCount++;
-                }
-            }
-        }
-        if (emptyCount == 0) {
-            return Winner::Tie;
-        }
-        return Winner::None;
-    };
+		for (int row = 0; row < ROW_COUNT - 2; row++) {
+			for (int col = 0; col < COL_COUNT; col++) {
+				if (spaces[row][col] == Empty) {
+					continue;
+				}
+				if (spaces[row][col] == spaces[row + 1][col] &&
+				    spaces[row][col] == spaces[row + 2][col]) {
+					if (spaces[row][col] == Player1Side1 ||
+					    spaces[row][col] == Player1Side2) {
+						return Winner::Player1;
+					}
+					return Winner::Player2;
+				}
+			}
+		}
 
-    bool Flip(Coords c, Direction dir) {
-        AssertCoords(c);
+		int emptyCount = 0;
+		for (int row = 0; row < ROW_COUNT; row++) {
+			for (int col = 0; col < COL_COUNT; col++) {
+				if (spaces[row][col] == Empty) {
+					emptyCount++;
+				}
+			}
+		}
+		if (emptyCount == 0) {
+			return Winner::Tie;
+		}
+		return Winner::None;
+	};
 
-        bool good = false;
-        for(auto d : GetEmptySides(c)) {
-            if (d == dir) {
-                good = true;
-                break;
-            }
-        }
+	bool Flip(Coords c, Direction dir) {
+		AssertCoords(c);
 
-        if (!good) {
-            return false;
-        }
+		bool good = false;
+		for (auto d : GetEmptySides(c)) {
+			if (d == dir) {
+				good = true;
+				break;
+			}
+		}
 
-        SpacePlayer p = GetSpace(c);
-        if (((p == Player1Side1 || p == Player1Side2) && Turn == Player::Player1) ||
-            ((p == Player2Side1 || p == Player2Side2) && Turn == Player::Player2)) {
-            return false;
-        }
+		if (!good) {
+			return false;
+		}
 
-        SpacePlayer target;
+		SpacePlayer p = GetSpace(c);
+		if (((p == Player1Side1 || p == Player1Side2) &&
+		     Turn == Player::Player1) ||
+		    ((p == Player2Side1 || p == Player2Side2) &&
+		     Turn == Player::Player2)) {
+			return false;
+		}
 
-        switch (p)
-        {
-        case Empty:
-            return false;
-            break;
-        case Player1Side1:
-            target = Player1Side2;
-            break;
-        case Player1Side2:
-            target = Player1Side1;
-            break;
-        case Player2Side1:
-            target = Player2Side2;
-            break;
-        case Player2Side2:
-            target = Player2Side1;
-            break;
-        default:
-            break;
-        }
+		SpacePlayer target;
 
-        switch (dir)
-        {
-        case Up:
-            spaces[c.row-1][c.col] = target;
-            break;
-        case Down:
-            spaces[c.row+1][c.col] = target;
-            break;
-        case Left:
-            spaces[c.row][c.col-1] = target;
-            break;
-        case Right:
-            spaces[c.row][c.col+1] = target;
-            break;
-        
-        default:
-            break;
-        }
-        GetSpace(c) = Empty;
+		switch (p) {
+		case Empty:
+			return false;
+			break;
+		case Player1Side1:
+			target = Player1Side2;
+			break;
+		case Player1Side2:
+			target = Player1Side1;
+			break;
+		case Player2Side1:
+			target = Player2Side2;
+			break;
+		case Player2Side2:
+			target = Player2Side1;
+			break;
+		default:
+			break;
+		}
 
-        Phase = TurnPhase::Place;
-        return true;
-    };
+		switch (dir) {
+		case Up:
+			spaces[c.row - 1][c.col] = target;
+			break;
+		case Down:
+			spaces[c.row + 1][c.col] = target;
+			break;
+		case Left:
+			spaces[c.row][c.col - 1] = target;
+			break;
+		case Right:
+			spaces[c.row][c.col + 1] = target;
+			break;
 
-    bool Place(Coords c, SpacePlayer p) {
-        AssertCoords(c);
-        assert(p != Empty);
+		default:
+			break;
+		}
+		GetSpace(c) = Empty;
 
-        if (Phase != TurnPhase::Place) {
-            return false;
-        }
+		Phase = TurnPhase::Place;
+		return true;
+	};
 
-        if (GetSpace(c) != Empty) {
-            return false;
-        }
+	bool Place(Coords c, SpacePlayer p) {
+		AssertCoords(c);
+		assert(p != Empty);
 
-        GetSpace(c) = p;
+		if (Phase != TurnPhase::Place) {
+			return false;
+		}
 
-        Phase = TurnPhase::Flip;
-        Turn = Turn == Player::Player1 ? Player::Player2 : Player::Player1;
-        return true;
-    };
+		if (GetSpace(c) != Empty) {
+			return false;
+		}
 
-    std::vector<Coords> GetTurnableSpaces() {
-        std::vector<Coords> r;
-        if (Phase != TurnPhase::Flip) {
-            return r;
-        }
+		GetSpace(c) = p;
 
-        for (int row = 0; row < ROW_COUNT; row++) {
-            for (int col = 0; col < COL_COUNT; col++) {
-                Coords c = {.row = row, .col = col};
-                SpacePlayer p = GetSpace(c);
-                if (p == Empty) {
-                    continue;
-                }
+		Phase = TurnPhase::Flip;
+		Turn = Turn == Player::Player1 ? Player::Player2 : Player::Player1;
+		return true;
+	};
 
-                if (GetEmptySides(c).empty()) {
-                    continue;
-                }
+	std::vector<Coords> GetTurnableSpaces() {
+		std::vector<Coords> r;
+		if (Phase != TurnPhase::Flip) {
+			return r;
+		}
 
-                if (((p == Player1Side1 || p == Player1Side2) && Turn == Player::Player2) ||
-                    ((p == Player2Side1 || p == Player2Side2) && Turn == Player::Player1)) {
-                    r.push_back(c);
-                }
-            }
-        }
-        
-        return r;
-    };
+		for (int row = 0; row < ROW_COUNT; row++) {
+			for (int col = 0; col < COL_COUNT; col++) {
+				Coords c = {.row = row, .col = col};
+				SpacePlayer p = GetSpace(c);
+				if (p == Empty) {
+					continue;
+				}
 
-    std::vector<Coords> GetEmptySpaces() {
-        std::vector<Coords> r;
+				if (GetEmptySides(c).empty()) {
+					continue;
+				}
 
-        for (int row = 0; row < ROW_COUNT; row++) {
-            for (int col = 0; col < COL_COUNT; col++) {
-                Coords c = {.row = row, .col = col};
-                SpacePlayer p = GetSpace(c);
-                if (p == Empty) {
-                    r.push_back(c);
-                }
-            }
-        }
-        
-        return r;
-    }
+				if (((p == Player1Side1 || p == Player1Side2) &&
+				     Turn == Player::Player2) ||
+				    ((p == Player2Side1 || p == Player2Side2) &&
+				     Turn == Player::Player1)) {
+					r.push_back(c);
+				}
+			}
+		}
+
+		return r;
+	};
+
+	std::vector<Coords> GetEmptySpaces() {
+		std::vector<Coords> r;
+
+		for (int row = 0; row < ROW_COUNT; row++) {
+			for (int col = 0; col < COL_COUNT; col++) {
+				Coords c = {.row = row, .col = col};
+				SpacePlayer p = GetSpace(c);
+				if (p == Empty) {
+					r.push_back(c);
+				}
+			}
+		}
+
+		return r;
+	}
 };
