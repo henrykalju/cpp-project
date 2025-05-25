@@ -231,23 +231,47 @@ void drawBoard(float x, float y, float size) {
 int screenWidth = 600;
 int screenHeight = 600;
 
+void drawResetButton() {
+	Vector2 mousePos = GetMousePosition();
+	Rectangle rec = {380, 245, 110, 40};
+	if (rectangleContainsVector(rec, mousePos)) {
+		DrawRectangleRec(rec, DARKPURPLE);
+		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+			board = {};
+		}
+	} else {
+		DrawRectangleRec(rec, PURPLE);
+	}
+	DrawText("Reset", 395, 250, 30, WHITE);
+}
+
 void draw() {
 	BeginDrawing();
 
-	ClearBackground(BLACK);
+	ClearBackground(DARKGREEN);
+	DrawText("Turn: ", 380, 75, 30, WHITE);
+	drawPlayerSymbol(board.Turn, {450, 53, 75, 75});
+	if (TurnPhase::Flip == board.Phase) {
+		DrawText("Phase: flip", 380, 150, 30, WHITE);
+	} else {
+		DrawText("Phase: place", 380, 150, 30, WHITE);
+	}
 
-	drawBoard(100.f, 50.f, 300.f);
+	drawBoard(50.f, 50.f, 300.f);
+	drawResetButton();
 
 	Winner winner = board.GetWinner();
 	switch (winner) {
 	case Winner::Player1:
-		DrawText("Player 1 won", 200, 500, 25, WHITE);
+		DrawText("Winner:", 200, 500, 30, WHITE);
+		drawPlayerSymbol(Player::Player1, {300, 477, 75, 75});
 		break;
 	case Winner::Player2:
-		DrawText("Player 2 won", 200, 500, 25, WHITE);
+		DrawText("Winner:", 200, 500, 30, WHITE);
+		drawPlayerSymbol(Player::Player2, {300, 477, 75, 75});
 		break;
 	case Winner::Tie:
-		DrawText("Tie", 200, 500, 25, WHITE);
+		DrawText("Tie", 200, 500, 30, WHITE);
 		break;
 
 	default:
@@ -257,6 +281,7 @@ void draw() {
 	EndDrawing();
 }
 int main() {
+	SetTraceLogLevel(LOG_WARNING);
 	InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
 	SetTargetFPS(60);
