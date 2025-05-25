@@ -72,13 +72,13 @@ class Board {
 		if (c.row > 0 && spaces[c.row - 1][c.col] == SpacePlayer::Empty) {
 			r.push_back(Up);
 		}
-		if (c.row < 3 && spaces[c.row + 1][c.col] == SpacePlayer::Empty) {
+		if (c.row < ROW_COUNT - 1 && spaces[c.row + 1][c.col] == SpacePlayer::Empty) {
 			r.push_back(Down);
 		}
 		if (c.col > 0 && spaces[c.row][c.col - 1] == SpacePlayer::Empty) {
 			r.push_back(Left);
 		}
-		if (c.col < 3 && spaces[c.row][c.col + 1] == SpacePlayer::Empty) {
+		if (c.col < COL_COUNT - 1 && spaces[c.row][c.col + 1] == SpacePlayer::Empty) {
 			r.push_back(Right);
 		}
 
@@ -86,81 +86,111 @@ class Board {
 	};
 
 	Winner GetWinner() {
-		for (int row = 0; row < ROW_COUNT - 2; row++) {
-			for (int col = 0; col < COL_COUNT - 2; col++) {
-				if (spaces[row][col] == SpacePlayer::Empty) {
-					continue;
-				}
-				if (spaces[row][col] == spaces[row + 1][col + 1] &&
-				    spaces[row][col] == spaces[row + 2][col + 2]) {
-					if (spaces[row][col] == SpacePlayer::Player1Side1 ||
-					    spaces[row][col] == SpacePlayer::Player1Side2) {
-						return Winner::Player1;
+		Winner winner = Winner::None;
+		{
+			for (int row = 0; row < ROW_COUNT - 2; row++) {
+				for (int col = 0; col < COL_COUNT - 2; col++) {
+					if (spaces[row][col] == SpacePlayer::Empty) {
+						continue;
 					}
-					return Winner::Player2;
+					if (spaces[row][col] == spaces[row + 1][col + 1] &&
+						spaces[row][col] == spaces[row + 2][col + 2]) {
+						if (spaces[row][col] == SpacePlayer::Player1Side1 ||
+							spaces[row][col] == SpacePlayer::Player1Side2) {
+							winner =  Winner::Player1;
+							goto afterLoops;
+						}
+						winner = Winner::Player2;
+						goto afterLoops;
+					}
 				}
 			}
+
+			for (int row = 2; row < ROW_COUNT; row++) {
+				for (int col = 0; col < COL_COUNT - 2; col++) {
+					if (spaces[row][col] == SpacePlayer::Empty) {
+						continue;
+					}
+					if (spaces[row][col] == spaces[row - 1][col + 1] &&
+						spaces[row][col] == spaces[row - 2][col + 2]) {
+						if (spaces[row][col] == SpacePlayer::Player1Side1 ||
+							spaces[row][col] == SpacePlayer::Player1Side2) {
+							winner = Winner::Player1;
+							goto afterLoops;
+						}
+						winner = Winner::Player2;
+						goto afterLoops;
+					}
+				}
+			}
+
+			for (int row = 0; row < ROW_COUNT; row++) {
+				for (int col = 0; col < COL_COUNT - 2; col++) {
+					if (spaces[row][col] == SpacePlayer::Empty) {
+						continue;
+					}
+					if (spaces[row][col] == spaces[row][col + 1] &&
+						spaces[row][col] == spaces[row][col + 2]) {
+						if (spaces[row][col] == SpacePlayer::Player1Side1 ||
+							spaces[row][col] == SpacePlayer::Player1Side2) {
+							winner = Winner::Player1;
+							goto afterLoops;
+						}
+						winner = Winner::Player2;
+						goto afterLoops;
+					}
+				}
+			}
+
+			for (int row = 0; row < ROW_COUNT - 2; row++) {
+				for (int col = 0; col < COL_COUNT; col++) {
+					if (spaces[row][col] == SpacePlayer::Empty) {
+						continue;
+					}
+					if (spaces[row][col] == spaces[row + 1][col] &&
+						spaces[row][col] == spaces[row + 2][col]) {
+						if (spaces[row][col] == SpacePlayer::Player1Side1 ||
+							spaces[row][col] == SpacePlayer::Player1Side2) {
+							winner = Winner::Player1;
+							goto afterLoops;
+						}
+						winner = Winner::Player2;
+						goto afterLoops;
+					}
+				}
+			}
+
+			int emptyCount = 0;
+			for (int row = 0; row < ROW_COUNT; row++) {
+				for (int col = 0; col < COL_COUNT; col++) {
+					if (spaces[row][col] == SpacePlayer::Empty) {
+						emptyCount++;
+					}
+				}
+			}
+			if (emptyCount == 0) {
+				winner = Winner::Tie;
+				goto afterLoops;
+			}
+			winner = Winner::None;
+			goto afterLoops;
 		}
 
-		for (int row = 2; row < ROW_COUNT; row++) {
-			for (int col = 0; col < COL_COUNT - 2; col++) {
-				if (spaces[row][col] == SpacePlayer::Empty) {
-					continue;
-				}
-				if (spaces[row][col] == spaces[row - 1][col + 1] &&
-				    spaces[row][col] == spaces[row - 2][col + 2]) {
-					if (spaces[row][col] == SpacePlayer::Player1Side1 ||
-					    spaces[row][col] == SpacePlayer::Player1Side2) {
-						return Winner::Player1;
-					}
-					return Winner::Player2;
-				}
-			}
+		afterLoops:
+
+		if (winner == Winner::None || winner == Winner::Tie) {
+			return winner;
 		}
 
-		for (int row = 0; row < ROW_COUNT; row++) {
-			for (int col = 0; col < COL_COUNT - 2; col++) {
-				if (spaces[row][col] == SpacePlayer::Empty) {
-					continue;
-				}
-				if (spaces[row][col] == spaces[row][col + 1] &&
-				    spaces[row][col] == spaces[row][col + 2]) {
-					if (spaces[row][col] == SpacePlayer::Player1Side1 ||
-					    spaces[row][col] == SpacePlayer::Player1Side2) {
-						return Winner::Player1;
-					}
-					return Winner::Player2;
-				}
-			}
+		if (winner == Winner::Player1 && Phase == TurnPhase::Place && Turn == Player::Player2) {
+			return winner;
 		}
 
-		for (int row = 0; row < ROW_COUNT - 2; row++) {
-			for (int col = 0; col < COL_COUNT; col++) {
-				if (spaces[row][col] == SpacePlayer::Empty) {
-					continue;
-				}
-				if (spaces[row][col] == spaces[row + 1][col] &&
-				    spaces[row][col] == spaces[row + 2][col]) {
-					if (spaces[row][col] == SpacePlayer::Player1Side1 ||
-					    spaces[row][col] == SpacePlayer::Player1Side2) {
-						return Winner::Player1;
-					}
-					return Winner::Player2;
-				}
-			}
+		if (winner == Winner::Player2 && Phase == TurnPhase::Place && Turn == Player::Player1) {
+			return winner;
 		}
 
-		int emptyCount = 0;
-		for (int row = 0; row < ROW_COUNT; row++) {
-			for (int col = 0; col < COL_COUNT; col++) {
-				if (spaces[row][col] == SpacePlayer::Empty) {
-					emptyCount++;
-				}
-			}
-		}
-		if (emptyCount == 0) {
-			return Winner::Tie;
-		}
+
 		return Winner::None;
 	};
 
@@ -248,12 +278,15 @@ class Board {
 
 		GetSpace(c) = p;
 
-		Phase = TurnPhase::Flip;
 		Turn = Turn == Player::Player1 ? Player::Player2 : Player::Player1;
+		Phase = TurnPhase::Flip;
+		if (GetFlippableSpaces().empty()) {
+			Phase = TurnPhase::Place;
+		}
 		return true;
 	};
 
-	std::vector<Coords> GetTurnableSpaces() {
+	std::vector<Coords> GetFlippableSpaces() {
 		std::vector<Coords> r;
 		if (Phase != TurnPhase::Flip) {
 			return r;
@@ -284,6 +317,27 @@ class Board {
 
 		return r;
 	};
+
+	bool IsSpaceFlippable(Coords coords) {
+		if (Phase != TurnPhase::Flip) {
+			return false;
+		}
+		SpacePlayer p = GetSpace(coords);
+		if (p == SpacePlayer::Empty) {
+			return false;
+		}
+
+		if (GetEmptySides(coords).empty()) {
+			return false;
+		}
+
+		return (((p == SpacePlayer::Player1Side1 ||
+		          p == SpacePlayer::Player1Side2) &&
+		         Turn == Player::Player2) ||
+		        ((p == SpacePlayer::Player2Side1 ||
+		          p == SpacePlayer::Player2Side2) &&
+		         Turn == Player::Player1));
+	}
 
 	std::vector<Coords> GetEmptySpaces() {
 		std::vector<Coords> r;
