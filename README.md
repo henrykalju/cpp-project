@@ -18,6 +18,14 @@ Aine LTAT.03.025 Henry ja Raido projekt
     - kui teine mängija saab enda käigu alguses nupu keeramisega kolmese jada ära lõhkuda, pole mäng läbi
     - kui vastane peab oma käigu alguses keerama mängija nupu nii, et mängija sai kolm järjest, on mängija võitnud
 
+## UI
+- Käimise faasis (place) kui hiir on ruudu kohal ja sellele ruudule saab käia, näidatakse ruudul punast ja sinist poolt ning mängija ikooni. Vajutades punasele või sinisele poolele saab sellele ruudule käia oma nupu vastavalt punane või sinine pool ülevalpool.  
+![Käimise faas](images/place.png)
+- Keeramise faasis (turn) muutuvad keeratavad nupud heledamaks. Nuppu saab keerata üle serva vajutades nupu vastavale servale. Kui hiir on keeratava serva kohal, muudab keeramise suunas olev serv värvi (indikeerimaks, et see on valiidne käik) ning sinna vajutades keeratakse nupp üle vastava serva kõrvalruudule.  
+![Keeramise faas](images/turn.png)
+- Kui mangija on mängu võitnud, tuuakse võitja ekraani allpool välja ning laual ei saa enam midagi teha. Kui kõik ruudud on täis ehk ei saa enam käia, aga kumbki mängija pole võitnud, on viik.  
+![Võidetud mäng](images/win.png)
+- Mängu lõppedes (või ka mängu ajal) saab vajutada Reset nuppu mängulaua algseisu taastamiseks.
 
 ### Ehitamine
 - `mkdir build`
