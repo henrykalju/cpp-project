@@ -2,7 +2,9 @@ Aine LTAT.03.025 Henry ja Raido projekt
 
 ## Projekt
 
-2 mängija mäng nagu trips-traps-trull
+2 mängija mäng nagu trips-traps-trull  
+Pildile vajutades näeb demo videot  
+[![Demo Video](https://img.youtube.com/vi/ECcF4dwh-Po/0.jpg)](https://www.youtube.com/watch?v=ECcF4dwh-Po)
 
 ### Reeglid
 - 4x4 mängulaud (kokku 16 ruutu)
